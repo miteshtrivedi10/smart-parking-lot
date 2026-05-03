@@ -76,9 +76,11 @@ Vehicle rate multipliers:
 Loyalty discounts:
 
 - `NONE`: `0.0`
-- `SILVER`: `0.10`
-- `GOLD`: `0.20`
-- `PLATINUM`: `0.30`
+- `SILVER`: `10.0`
+- `GOLD`: `20.0`
+- `PLATINUM`: `30.0`
+
+These values are represented as whole-number percentages in code.
 
 Spot support:
 
@@ -134,7 +136,7 @@ Unknown tickets are ignored.
 - Exit must be between `15:30` and `19:00`.
 - Entry and exit must be on the same calendar day.
 - Duration must not exceed 15 hours.
-- Loyalty discount is subtracted from the vehicle-adjusted flat rate.
+- Current implementation returns the loyalty discount amount for this flat rate, not the final discounted payable amount.
 
 ### Night Owl Special
 
@@ -143,7 +145,24 @@ Unknown tickets are ignored.
 - Exit must be between `05:00` and `10:00`.
 - Exit must be exactly one calendar day after entry.
 - Duration must not exceed 18 hours.
-- Loyalty discount is subtracted from the vehicle-adjusted flat rate.
+- Current implementation returns the loyalty discount amount for this flat rate, not the final discounted payable amount.
+
+## Solution Driver Use Cases
+
+`SolutionDriver` runs deterministic example scenarios and prints the `ParkingTicket` and `Invoice` after each scenario:
+
+- Standard hourly pricing for a car with no peak overlap.
+- Standard hourly pricing for a motorcycle with partial peak overlap.
+- Standard hourly pricing for a bus on a weekend.
+- Early Bird Special for a car with `SILVER` loyalty.
+- Early Bird Special for a bus with `GOLD` loyalty and vehicle multiplier.
+- Night Owl Special for a motorcycle with `PLATINUM` loyalty.
+- Night Owl Special for a car with no loyalty.
+- Best-value policy selection when Standard and Early Bird are both applicable.
+- Extended stay over 24 hours, where special rates are invalid and Standard applies.
+- Parking lifecycle behavior: duplicate rejection, capacity exhaustion, unpark, and slot reuse.
+
+The driver sets ticket timestamps with reflection so each pricing use case is repeatable.
 
 ## Running The Project
 
@@ -198,5 +217,6 @@ The README reflects the current code behavior. A few areas should be reviewed be
 
 - `ParkingEngineImpl.parkVehicle(...)` returns `null` for duplicate vehicles or full capacity instead of a structured result or exception.
 - `ParkingTicket` captures timestamps internally with `LocalDateTime.now()`, which makes deterministic pricing tests harder without reflection or a clock abstraction.
+- `SpecialRatePolicy.calculate(...)` currently returns only the loyalty discount amount. Per the PDF requirement, it should subtract the discount from the vehicle-adjusted flat rate.
 - `ParkingTicket.equals(...)` casts without checking the object type.
 - The package name `repository` currently contains interfaces, not persistence implementations.
