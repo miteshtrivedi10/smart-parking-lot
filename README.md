@@ -1,4 +1,4 @@
-# smart-lot (This is part of take home exercise for [SAHAJ SOFTWARE](https://sahaj.ai/))
+# smart-lot (Take home exercise for [SAHAJ SOFTWARE](https://sahaj.ai/))
 
 `smart-lot` is a Java 21 Maven project that models a parking-lot engine with slot allocation, ticketing, unparking, and invoice generation using multiple pricing policies.
 
